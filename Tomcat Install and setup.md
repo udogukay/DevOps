@@ -1,4 +1,4 @@
- # Tomcat install 
+# Tomcat install
 
  Install OpenJDK 11
   
@@ -57,4 +57,19 @@ Start tomcat service
 	systemctl start tomcat
 
 **Note:** Selinux enforcement has to be disabled if you install tomcat to /opt else the tomcat service will fail to start.
-	This is a security compromise that should be avoided whenever possible 
+ This is a security compromise that should be avoided whenever possible 
+
+
+
+# Tomcat Configuration
+
+create user accounts for admin roles in /usr/local/tomcat/conf/tomcat-users.xml by inserting the following
+
+    <role rolename="manager-gui"/>
+    <role rolename="manager-script"/>
+    <role rolename="manager-jmx"/>
+    <role rolename="manager-status"/>
+    <user username="admin" password="admin" roles="manager-gui, manager-script, manager-jmx, manager-status"/>
+    <user username="deployer" password="deployer" roles="manager-script"/>
+    <user username="tomcat" password="s3cret" roles="manager-gui"/>
+
