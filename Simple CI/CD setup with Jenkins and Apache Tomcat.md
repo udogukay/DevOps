@@ -1,4 +1,20 @@
-# Tomcat install
+# Tomcat install and setup
+
+_optional:_ If you get the following error when running yum update of install: “This system is not registered with an entitlement server. You can use subscription-manager to register”, The issue can be caused when the system has RHEL (RedHat) repositories installed (generally by mistake) or by old, bad, extra yum plugins.
+
+Fix the issue by following these steps:
+
+- open the “subscription-manager.conf” file
+
+       $ sudo vi /etc/yum/pluginconf.d/subscription-manager.conf
+
+- In the opened file, change enabled=1 to enabled=0 and save the file
+
+- run the "yum clean all" command
+
+       $ sudo yum clean all
+
+
 
  Install OpenJDK 11
   
@@ -50,11 +66,11 @@ create a unit file by pasting the following in /etc/systemd/system/tomcat.servic
 
 Reload systemctl
 
-	systemctl daemon-reload
+	# systemctl daemon-reload
 
 Start tomcat service
 
-	systemctl start tomcat
+	# systemctl start tomcat
 
 **Note:** Selinux enforcement has to be disabled if you install tomcat to /opt else the tomcat service will fail to start.
  This is a security compromise that should be avoided whenever possible 
@@ -73,3 +89,16 @@ create user accounts for admin roles in /usr/local/tomcat/conf/tomcat-users.xml 
     <user username="deployer" password="deployer" roles="manager-script"/>
     <user username="tomcat" password="s3cret" roles="manager-gui"/>
 
+The default port 8080 will need to be altered, especially if you're planning on using jenkins.
+
+Stop the Tomcat server
+
+    # systemctl stop tomcat
+
+Open **server.xml** in the conf folder
+
+    # vi /usr/local/tomcat9/conf/server.xml
+
+ search for “**Connector port**” and change its value from 8080 to your desired port value, save the file and restart tomcart service
+
+ 
