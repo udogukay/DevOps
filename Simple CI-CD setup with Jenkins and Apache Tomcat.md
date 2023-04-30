@@ -1,5 +1,6 @@
 # Requirements
-- Two RHEL instances
+- Two RHEL instances; 
+- Simple Java project
 - AWS Firewall exceptions for ports 8080 and 8090 
 
 # Tomcat install and setup
