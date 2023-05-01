@@ -1,9 +1,9 @@
 # Requirements
-- Two RHEL instances; 
+- Two RHEL instances; one for Tomcat and another for Jenkins
 - Simple Java project
 - AWS Firewall exceptions for ports 8080 and 8090 
 
-# Tomcat install and setup
+
 
 _optional:_ If you get the following error when running yum update of install: “This system is not registered with an entitlement server. You can use subscription-manager to register”, The issue can be caused when the system has RHEL (RedHat) repositories installed (generally by mistake) or by old, bad, extra yum plugins.
 
@@ -19,7 +19,9 @@ Fix the issue by following these steps:
 
        $ sudo yum clean all
 
+# Tomcat install and setup
 
+Note: Be wary of installing the latest build of Tomcat as the Maven plugins for jenkins might not be compatible wit the the latest maven builds 
 
 - Install OpenJDK 11
   
@@ -115,3 +117,24 @@ The default port 8080 will need to be altered, especially if you're planning on 
 
 # Jenkins install and setup
 
+- Install Fontconfig and OpenJDK 11
+  
+        # yum install fontconfig java-11-openjdk
+
+- Install Jenkins Repository
+
+        # wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        # rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+        
+- Install Jenkins
+        
+        # yum install jenkins
+
+- Start the Jenkins service and auto-start on boot
+
+        # sudo systemctl start jenkins
+        # sudo systemctl enable jenkins
+
+- Verfiy Jenkins status
+
+        # systemctl status jenkins
