@@ -1,6 +1,6 @@
 # Requirements
-- Two RHEL instances; one for Tomcat and another for Jenkins
-- Simple Java project
+- Two EC2 RHEL instances; one for Tomcat and another for Jenkins
+- Simple Java project on github
 - AWS Firewall exceptions for ports 8080 and 8090 
 
 
@@ -101,8 +101,14 @@ To permanently disable SELinux, open the file /etc/sysconfig/selinux
         <user username="deployer" password="deployer" roles="manager-script"/>
         <user username="tomcat" password="s3cret" roles="manager-gui"/>
 
+-Edit the webapps context.xml file to allow server manager access by commenting out the valve field
 
-The default port 8080 will need to be altered, especially if you're planning on using jenkins.
+        vi /opt/tomcat/latest/webapps/manager/META-INF/context.xml
+
+        <!-- <Valve className="org.apache.catalina.valves.RemoteAddrValve"
+         allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" /> -->
+
+The default port 8080 may need to be altered, especially if you're planning on using jenkins.
 
 - Stop the Tomcat server
 
@@ -138,3 +144,63 @@ The default port 8080 will need to be altered, especially if you're planning on 
 - Verfiy Jenkins status
 
         # systemctl status jenkins
+        
+
+
+# Jenkins Configuration
+
+### Integrate Git With Jenkins
+- Install git
+
+        # yum install git
+
+- Access Jenkins web UI using syntax ***host_address:port***
+-   Install git plugin on Jenkins GUI
+        
+         Dashboard -> Plugin Manager 
+
+- Configure Git
+
+        Dashboard -> Manage Jenkins->Global Tool Configuration ->Name:Git, Path to Git executable:git
+
+ 
+# Setup Maven on Jenkins Server
+
+- Install Maven 
+
+        # yum install -y maven
+
+- Install Maven integration plugin in Jenkins via plugin manager
+
+- Install "Deploy to container" plugin
+- Configure maven plugin and JDK via global Tool Configuration   
+
+-Configure Tomcat server credentials by adding global credentails (unrestricted) as written in tomcat_users.xml
+
+  Scope: Global
+
+  Username: deployer
+
+  password: deployer 
+  
+  ID : Tomcat_Credentials
+
+  Description: Tomcat_Credentials
+
+
+- Create a new Job select maven project from the list
+- Under source code management, select git and fill in the java project's github clone URL and credentials if you're using a private repo. Specify what branches to build.
+- Under build, enter the path of the root POM  
+- Under Goals and options, enter **clean install package**
+- Under post-build Actions, select **Deploy war/ear to a container**
+-  Under WAR/EAR files, paste the following:
+
+        **/*.war
+- Add a container corresponding to the tomcat version you have installed
+
+- Select the deployer credentials from the drop-down list of credentials
+
+- In the Tomcat URL Field, enter the URL and port of the Tomcat server 
+- Save and apply
+- Run a build of your project
+- The build should be deployed to the webapps directory of your tomcat server and viewed on a browser by navigating to the  webapps directory
