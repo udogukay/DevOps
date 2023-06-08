@@ -47,4 +47,30 @@
         
         # docker build -t mytomcat .
 
--  
+Integrate Docker with Jenkins 
+
+- Create a docker admin user
+
+        # useradd dockeradmin
+        # passwd dockeradmin
+        # usermod -aG docker dockeradmin        //append user to to docker group
+        
+        # vi /etc/ssh/sshd_config       // passwordAuthentication yes
+        # service sshd reload
+        # ssh-keygen
+
+
+- On the jenkins server, install the publish over SSH plugin
+- Go to Configure System, in the publish over SSH section, add SSH Server.
+-Enter hostname, username (dockeradmin), click on advanced and check *Use password authentication, or use a different key* and enter dockeradmin password
+
+- Create new item from a pre-existing maven build
+- Delete the *deploy war/ear to a container* item
+- Add *build artifiacts over SSH* under post-build actions
+- Fill in the following info 
+        
+        Name: Docker Host
+        Transfer set Source Files: webapp/target/*.war
+        Remove prefix: webapp/target
+        Remote directory: //opt/docker
+        Exec command: 
