@@ -57,6 +57,7 @@ Integrate Docker with Jenkins
         
         # vi /etc/ssh/sshd_config       // passwordAuthentication yes
         # service sshd reload
+        # su dockeradmin
         # ssh-keygen
 
 
@@ -73,4 +74,7 @@ Integrate Docker with Jenkins
         Transfer set Source Files: webapp/target/*.war
         Remove prefix: webapp/target
         Remote directory: //opt/docker
-        Exec command: 
+        Exec command: cd /opt/docker;
+        docker build -t regapp:v1 .;
+        docker run -d --name regapp:v1 -p 8087:8080 regapp:v1
+
