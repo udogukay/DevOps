@@ -1,61 +1,37 @@
-
+- Launch an EC2 instance for Docker host
 - install docker
     
-        # yum install docker -y
-- pull tomcat image
+         yum install docker -y
 
-        docker pull tomcat
+- create a new user for Docker management and add it to Docker (default) group
 
-- create daemonized docker container with exposed port 8080
-
-    # docker run -d --name tomcat-container -p 8081:8080 tomcat
- - fix potential problem by renaming webapps folder to webapps2 and webapps.dist folder to webapps
-
-        # docker exec -it tomcat-container /bin/bash
-
-        # mv webapps webapps2
-
-        # mv webapps.dist/ webapps
-
-        # exit
-
-- Stop the container
-
-        # docker stop tomcat-container
-
-- Create a docker file for the container
-
-        # vi dockerfile
+         useradd dockeradmin
+         passwd dockeradmin
+         usermod -aG docker dockeradmin
 
 
+- Create a docker file under /opt/docker
 
-        FROM centos
-        RUN mkdir /opt/tomcat/
-        WORKDIR /opt/tomcat
-        RUN curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.75/bin/apache-tomcat-9.0.75.tar.gz
-        RUN tar -xvzf apache-tomcat-9.0.75.tar.gz
-        RUN mv apache-tomcat-9.0.75/* /opt/tomcat
-        RUN cd /etc/yum.repos.d/
-        RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
-        RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
-        RUN yum -y install java
-        CMD /bin/bash
-        EXPOSE 8080
-        CMD ["/opt/tomcat/bin/catalina.sh", "run"]
+        
+         mkdir /opt/docker
+         vi dockerfile
+        
+        From tomcat:8-jre8 
+        # copy war file on to container 
+        COPY ./webapp.war /usr/local/tomcat/webapps
+
+
+        
 
 - Build a container with the dockerfile and tag it
         
-        # docker build -t mytomcat .
+         docker build -t mytomcat .
 
 Integrate Docker with Jenkins 
 
-- Create a docker admin user
 
-        # useradd dockeradmin
-        # passwd dockeradmin
-        # usermod -aG docker dockeradmin        //append user to to docker group
         
-        # vi /etc/ssh/sshd_config       // passwordAuthentication yes
+         vi /etc/ssh/sshd_config       // passwordAuthentication yes
         # service sshd reload
         # su dockeradmin
         # ssh-keygen
