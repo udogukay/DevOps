@@ -54,3 +54,8 @@ Integrate Docker with Jenkins
         docker build -t regapp:v1 .;
         docker run -d --name regapp:v1 -p 8087:8080 regapp:v1
 
+- Execute Jenkins job
+
+- Access web application from browser which is running on container
+
+        <docker_host_Public_IP>:8087
